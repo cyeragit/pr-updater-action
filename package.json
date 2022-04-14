@@ -7,10 +7,6 @@
     "test": "jest",
     "build": "ncc build -o bin src/index.ts"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/maxkomarychev/pr-updater-action.git"
-  },
   "author": "Max Komarychev",
   "license": "MIT",
   "bugs": {
