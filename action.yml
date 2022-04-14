@@ -4,6 +4,9 @@ inputs:
   token:
     required: true
     description: "Token to perform api calls"
+  base_branch:
+    required: true
+    description: "The base branch to check"
 
 runs:
   using: node12
