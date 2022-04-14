@@ -15,7 +15,7 @@ async function main() {
     const prs = listPRsResponse.data
     await Promise.all(
         prs.map((pr) => {
-            if (pr.head.repo.allow_auto_merge) {
+            if (pr.auto_merge) {
                 core.info('PR number - {pr.number} allow_auto_merge flag is set to true')
                 core.info('Updating with base branch ${baseBranch}')
                 client.rest.pulls.updateBranch({
