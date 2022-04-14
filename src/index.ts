@@ -6,14 +6,14 @@ const baseBranch = core.getInput('base_branch')
 const client = github.getOctokit(token)
 
 async function main() {
-    core.info('here')
     const listPRsResponse = await client.rest.pulls.list({
         ...github.context.repo,
         base: baseBranch,
         state: 'open',
     })
+    core.info("list response")
+    listPRsResponse.data.map((pr) => core.info(pr.title))
     const prs = listPRsResponse.data
-    core.info('here1')
     await Promise.all(
         prs.map((pr) => {
             if (pr.auto_merge) {
