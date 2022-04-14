@@ -1256,8 +1256,10 @@ const baseBranch = core.getInput('base_branch');
 const client = github.getOctokit(token);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
+        core.info('here');
         const listPRsResponse = yield client.rest.pulls.list(Object.assign(Object.assign({}, github.context.repo), { base: baseBranch, state: 'open' }));
         const prs = listPRsResponse.data;
+        core.info('here1');
         yield Promise.all(prs.map((pr) => {
             if (pr.auto_merge) {
                 core.info('PR number - ${pr.number} auto_merge flag is set to true');
