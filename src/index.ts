@@ -16,7 +16,7 @@ async function main() {
     await Promise.all(
         prs.map((pr) => {
             if (pr.auto_merge) {
-                core.info('PR number - {pr.number} allow_auto_merge flag is set to true')
+                core.info('PR number - ${pr.number} allow_auto_merge flag is set to true')
                 core.info('Updating with base branch ${baseBranch}')
                 client.rest.pulls.updateBranch({
                     ...github.context.repo,
