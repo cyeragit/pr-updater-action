@@ -1258,10 +1258,12 @@ const client = github.getOctokit(token);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         if (prNumber) {
+            core.info(`PR number is set - ${prNumber}`);
             const pr = yield client.rest.pulls.get(Object.assign(Object.assign({}, github.context.repo), { pull_number: parseInt(prNumber) }));
             yield execute([pr]);
         }
         else {
+            core.info('PR number is not set, running on all PRs');
             const prsList = yield client.rest.pulls.list(Object.assign(Object.assign({}, github.context.repo), { base: baseBranch, state: 'open' }));
             yield execute(prsList.data);
         }

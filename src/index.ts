@@ -9,12 +9,14 @@ const client = github.getOctokit(token)
 async function main() {
 
     if (prNumber) {
+        core.info(`PR number is set - ${prNumber}`)
         const pr = await client.rest.pulls.get({
             ...github.context.repo,
             pull_number: parseInt(prNumber),
         })
         await execute([pr])
     } else {
+        core.info('PR number is not set, running on all PRs')
         const prsList = await client.rest.pulls.list({
             ...github.context.repo,
             base: baseBranch,
