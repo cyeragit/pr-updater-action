@@ -1,33 +1,58 @@
 # PR Updater
 
-## Quick start
+This action automatically updates your branch as follows:
+1. Every time code is pushed to the specified branches (under on.push.branches):
+   1. Update all PRs with the same base branch which have their "auto merge" flag set to true
+2. When enabling auto merge in a specific PR:
+   1. Update the branch with changes from base branch
+   
+## Usage
 
-1. Create user token in [user settings](https://github.com/settings/tokens)
-2. Set this token as a secret `USER_TOKEN` in settings of a target repository: `https://github.com/<owner>/<repo>/settings/secrets`
-3. create file `.github/workflows/pr-updater.yml` with the following content:
+1. create file `.github/workflows/pr-updater.yml` with the following content:
 
     ```yml
     name: PR update
 
-    on:
-        push:
-            branches: 
-                - master
+   on:
+     pull_request:
+       types:
+         - auto_merge_enabled
+     push:
+       branches:
+         - develop
 
     jobs:
-        autoupdate:
+        pr_update:
             runs-on: ubuntu-latest
             steps:
             - uses: actions/checkout@v1
+        # Checks the event type of this workflow
+        # if github.even.action == auto_merge_enabled then it is a PR context
+        # Otherwise, push to develop context
+            - id: set-pr-number
+              run: |
+                 if [ "$IS_PR" == "auto_merge_enabled" ]; then
+                     echo '::set-output name=pr_number::${{ github.event.number }}'
+                 else
+                     echo '::set-output name=pr_number::'
+                 fi
+              env:
+                IS_PR: "${{ github.event.action }}"   
             - name: update all prs
                 uses: maxkomarychev/pr-updater-action@v1.0.0
                 with:
                     token: ${{ secrets.USER_TOKEN }}
+                    base_branch: develop
+                    current_pr_number: ${{ steps.set-pr-number.outputs.pr_number }}
     ```
 
-4. Now every time code is pushed to branches specified in the workflow all other
-pull requests targeting these branches will be automatically updated.
+## Inputs
 
+|               Input               |         type         | required |        default        |                                      description                                      |
+|:---------------------------------:|:--------------------:|:--------:|:---------------------:|:-------------------------------------------------------------------------------------:|
+|               token               |       `string`       | `false`  | `${{ github.token }}` |                                                                                       |
+|             base_branch             |       `string`       |  `true`  |                       |                            The base branch to compare with                            |
+|               current_pr_number               |       `string`       | `false`  |                       | The PR number to check. When empty, checks all open PRs with the relevant base branch |
 
 ## Current limitations
 
