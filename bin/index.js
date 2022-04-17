@@ -1253,14 +1253,25 @@ const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 const token = core.getInput('token');
 const baseBranch = core.getInput('base_branch');
+const prNumber = core.getInput('pr_number');
 const client = github.getOctokit(token);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const listPRsResponse = yield client.rest.pulls.list(Object.assign(Object.assign({}, github.context.repo), { base: baseBranch, state: 'open' }));
-        const prs = listPRsResponse.data;
+        if (prNumber) {
+            const pr = yield client.rest.pulls.get(Object.assign(Object.assign({}, github.context.repo), { pull_number: parseInt(prNumber) }));
+            yield execute([pr]);
+        }
+        else {
+            const prsList = yield client.rest.pulls.list(Object.assign(Object.assign({}, github.context.repo), { base: baseBranch, state: 'open' }));
+            yield execute(prsList.data);
+        }
+    });
+}
+function execute(prs) {
+    return __awaiter(this, void 0, void 0, function* () {
         yield Promise.all(prs.map((pr) => {
-            let auto_merge = pr.auto_merge;
-            let pr_number = pr.number;
+            const auto_merge = pr.auto_merge;
+            const pr_number = pr.number;
             if (auto_merge) {
                 core.info(`PR number - ${pr_number} auto_merge flag is set`);
                 core.info(`Updating with base branch ${baseBranch}`);
