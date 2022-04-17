@@ -1260,6 +1260,7 @@ function main() {
         const prs = listPRsResponse.data;
         yield Promise.all(prs.map((pr) => {
             let auto_merge = pr.auto_merge;
+            console.log(auto_merge);
             let pr_number = pr.number;
             if (auto_merge) {
                 core.info(`PR number - ${pr_number} auto_merge flag is set to ${auto_merge}`);
@@ -1267,7 +1268,7 @@ function main() {
                 client.rest.pulls.updateBranch(Object.assign(Object.assign({}, github.context.repo), { pull_number: pr.number }));
             }
             else {
-                core.info(`PR number - ${pr_number} auto_merge flag is set to ${auto_merge}. Skipping updating`);
+                core.info(`PR number - ${pr_number} auto_merge flag is set to ${auto_merge}. Skipping branch update`);
             }
         }));
     });
