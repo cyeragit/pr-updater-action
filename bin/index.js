@@ -1257,14 +1257,15 @@ const client = github.getOctokit(token);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const listPRsResponse = yield client.rest.pulls.list(Object.assign(Object.assign({}, github.context.repo), { base: baseBranch, state: 'open' }));
-        core.info("list response");
-        listPRsResponse.data.map((pr) => core.info(pr.title));
         const prs = listPRsResponse.data;
         yield Promise.all(prs.map((pr) => {
             if (pr.auto_merge) {
                 core.info('PR number - ${pr.number} auto_merge flag is set to true');
                 core.info('Updating with base branch ${baseBranch}');
                 client.rest.pulls.updateBranch(Object.assign(Object.assign({}, github.context.repo), { pull_number: pr.number }));
+            }
+            else {
+                core.info('PR number - ${pr.number} auto_merge flag is set to skip. Skipping updating');
             }
         }));
     });

@@ -11,8 +11,6 @@ async function main() {
         base: baseBranch,
         state: 'open',
     })
-    core.info("list response")
-    listPRsResponse.data.map((pr) => core.info(pr.title))
     const prs = listPRsResponse.data
     await Promise.all(
         prs.map((pr) => {
@@ -23,6 +21,8 @@ async function main() {
                     ...github.context.repo,
                     pull_number: pr.number,
                 })
+            }else{
+                core.info('PR number - ${pr.number} auto_merge flag is set to skip. Skipping updating')
             }
         }),
     )
