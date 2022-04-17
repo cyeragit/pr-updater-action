@@ -15,6 +15,7 @@ async function main() {
     await Promise.all(
         prs.map((pr) => {
             let auto_merge = pr.auto_merge
+            console.log(auto_merge)
             let pr_number = pr.number
             if (auto_merge) {
                 core.info(`PR number - ${pr_number} auto_merge flag is set to ${auto_merge}`);
@@ -24,7 +25,7 @@ async function main() {
                     pull_number: pr.number,
                 })
             }else{
-                core.info(`PR number - ${pr_number} auto_merge flag is set to ${auto_merge}. Skipping updating`);
+                core.info(`PR number - ${pr_number} auto_merge flag is set to ${auto_merge}. Skipping branch update`);
             }
         }),
     )
