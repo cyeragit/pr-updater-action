@@ -32,8 +32,7 @@ async function execute(prs: any[]) {
             const auto_merge = pr.auto_merge
             const pr_number = pr.number
             if (auto_merge) {
-                core.info(`PR number - ${pr_number} auto_merge flag is set`);
-                core.info(`Updating with base branch ${baseBranch}`);
+                core.info(`PR number - ${pr_number} auto_merge flag is set. Merging with ${baseBranch}`);
                 client.rest.pulls.updateBranch({
                     ...github.context.repo,
                     pull_number: pr.number,
