@@ -7,7 +7,7 @@ inputs:
   base_branch:
     required: true
     description: "The base branch to check"
-  pr_number:
+  current_pr_number:
     required: false
     description: "The PR number. Can be empty"
 
