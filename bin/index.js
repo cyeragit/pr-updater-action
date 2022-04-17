@@ -1253,35 +1253,43 @@ const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 const token = core.getInput('token');
 const baseBranch = core.getInput('base_branch');
-const prNumber = core.getInput('pr_number');
+const currentPRNumber = core.getInput('current_pr_number');
 const client = github.getOctokit(token);
+function getSpecificPr() {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield client.rest.pulls.get(Object.assign(Object.assign({}, github.context.repo), { pull_number: parseInt(currentPRNumber) }));
+    });
+}
+function listPRs(baseBranch) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield client.rest.pulls.list(Object.assign(Object.assign({}, github.context.repo), { base: baseBranch, state: 'open' }));
+    });
+}
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        if (prNumber) {
-            core.info(`PR number is set - ${prNumber}`);
-            const pr = yield client.rest.pulls.get(Object.assign(Object.assign({}, github.context.repo), { pull_number: parseInt(prNumber) }));
-            yield execute([pr]);
+        if (currentPRNumber) {
+            core.info(`PR number is set - ${currentPRNumber}`);
+            const pr = yield getSpecificPr();
+            yield updateBranch(pr);
         }
         else {
             core.info('PR number is not set, running on all PRs');
-            const prsList = yield client.rest.pulls.list(Object.assign(Object.assign({}, github.context.repo), { base: baseBranch, state: 'open' }));
-            yield execute(prsList.data);
+            const prsList = yield listPRs(baseBranch);
+            yield Promise.all(prsList.data.map((pr) => updateBranch(pr)));
         }
     });
 }
-function execute(prs) {
+function updateBranch(pr) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield Promise.all(prs.map((pr) => {
-            const auto_merge = pr.auto_merge;
-            const pr_number = pr.number;
-            if (auto_merge) {
-                core.info(`PR number - ${pr_number} auto_merge flag is set. Merging with ${baseBranch}`);
-                client.rest.pulls.updateBranch(Object.assign(Object.assign({}, github.context.repo), { pull_number: pr.number }));
-            }
-            else {
-                core.info(`PR number - ${pr_number} auto_merge flag isn't set. Skipping branch update`);
-            }
-        }));
+        const auto_merge = pr.auto_merge;
+        const pr_number = pr.number;
+        if (auto_merge) {
+            core.info(`PR number - ${pr_number} auto_merge flag is set. Merging with ${baseBranch}`);
+            client.rest.pulls.updateBranch(Object.assign(Object.assign({}, github.context.repo), { pull_number: pr.number }));
+        }
+        else {
+            core.info(`PR number - ${pr_number} auto_merge flag isn't set. Skipping branch update`);
+        }
     });
 }
 main();
