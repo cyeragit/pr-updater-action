@@ -1269,8 +1269,8 @@ function main() {
     return __awaiter(this, void 0, void 0, function* () {
         if (currentPRNumber) {
             core.info(`PR number is set - ${currentPRNumber}`);
-            const pr = yield getSpecificPr();
-            yield updateBranch(pr);
+            const pr_response = yield getSpecificPr();
+            yield updateBranch(pr_response.data);
         }
         else {
             core.info('PR number is not set, running on all PRs');
