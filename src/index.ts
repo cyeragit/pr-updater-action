@@ -24,8 +24,8 @@ async function listPRs(baseBranch: string) {
 async function main() {
     if (currentPRNumber) {
         core.info(`PR number is set - ${currentPRNumber}`);
-        const pr = await getSpecificPr();
-        await updateBranch(pr);
+        const pr_response = await getSpecificPr();
+        await updateBranch(pr_response.data);
     } else {
         core.info('PR number is not set, running on all PRs');
         const prsList = await listPRs(baseBranch);
