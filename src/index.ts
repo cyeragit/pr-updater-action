@@ -41,10 +41,14 @@ async function updateBranch(pr) {
     const pr_number = pr.number;
     if (auto_merge) {
         core.info(`PR number - ${pr_number} auto_merge flag is set. Merging with ${baseBranch}`);
-        client.rest.pulls.updateBranch({
-            ...github.context.repo,
-            pull_number: pr.number,
-        });
+        try {
+            client.rest.pulls.updateBranch({
+                ...github.context.repo,
+                pull_number: pr.number,
+            });
+        } catch (ex) {
+            core.info(ex)
+        }
     } else {
         core.info(`PR number - ${pr_number} auto_merge flag isn't set. Skipping branch update`);
     }
