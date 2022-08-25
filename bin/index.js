@@ -1262,7 +1262,7 @@ function getSpecificPr() {
 }
 function listPRs(baseBranch) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield client.rest.pulls.list(Object.assign(Object.assign({}, github.context.repo), { base: baseBranch, state: 'open' }));
+        return yield client.paginate("GET /repos/{owner}/{repo}/pulls", Object.assign(Object.assign({}, github.context.repo), { base: baseBranch, state: 'open', per_page: 100 }), (response) => response.data.map((pr) => pr));
     });
 }
 function main() {
@@ -1275,7 +1275,8 @@ function main() {
         else {
             core.info('PR number is not set, running on all PRs');
             const prsList = yield listPRs(baseBranch);
-            yield Promise.all(prsList.data.map((pr) => updateBranch(pr)));
+            core.info(`PRs amount - ${prsList.length}`);
+            yield Promise.all(prsList.map((pr) => updateBranch(pr)));
         }
     });
 }

@@ -14,11 +14,13 @@ async function getSpecificPr() {
 }
 
 async function listPRs(baseBranch: string) {
-    return await client.rest.pulls.list({
+
+    return await client.paginate("GET /repos/{owner}/{repo}/pulls", {
         ...github.context.repo,
         base: baseBranch,
         state: 'open',
-    });
+        per_page: 100,
+    }, (response) => response.data.map((pr) => pr));
 }
 
 async function main() {
@@ -29,7 +31,8 @@ async function main() {
     } else {
         core.info('PR number is not set, running on all PRs');
         const prsList = await listPRs(baseBranch);
-        await Promise.all(prsList.data.map((pr) => updateBranch(pr)));
+        core.info(`PRs amount - ${prsList.length}`);
+        await Promise.all(prsList.map((pr) => updateBranch(pr)));
     }
 }
 
