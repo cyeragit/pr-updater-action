@@ -28,11 +28,25 @@ async function main() {
         core.info(`PR number is set - ${currentPRNumber}`);
         const pr_response = await getSpecificPr();
         await updateBranch(pr_response.data);
+        await addLabel(pr_response.data);
     } else {
         core.info('PR number is not set, running on all PRs');
         const prsList = await listPRs(baseBranch);
         core.info(`PRs amount - ${prsList.length}`);
         await Promise.all(prsList.map((pr) => updateBranch(pr)));
+    }
+}
+
+async function addLabel(pr) {
+    try {
+        core.info(`Adding auto-merge label to PR number - ${pr.number}`)
+        client.rest.issues.addLabels({
+            ...github.context.repo,
+            issue_number: pr.number,
+            labels: ['auto-merge']
+        });
+    } catch (ex) {
+        core.info(ex)
     }
 }
 
