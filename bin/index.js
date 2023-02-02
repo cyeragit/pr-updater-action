@@ -1950,14 +1950,13 @@ function main() {
         if (currentPRNumber) {
             core.info(`PR number is set - ${currentPRNumber}`);
             const pr_response = yield getSpecificPr();
-            yield updateBranch(pr_response.data);
-            yield addLabel(pr_response.data);
+            yield updateBranch(pr_response.data).then(() => addLabel(pr_response.data));
         }
         else {
             core.info('PR number is not set, running on all PRs');
             const prsList = yield listPRs(baseBranch);
             core.info(`PRs amount - ${prsList.length}`);
-            yield Promise.all(prsList.map((pr) => updateBranch(pr)));
+            yield Promise.all(prsList.map((pr) => updateBranch(pr).then(() => addLabel(pr))));
         }
     });
 }
