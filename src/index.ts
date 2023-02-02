@@ -39,12 +39,15 @@ async function main() {
 
 async function addLabel(pr) {
     try {
-        core.info(`Adding auto-merge label to PR number - ${pr.number}`)
-        client.rest.issues.addLabels({
-            ...github.context.repo,
-            issue_number: pr.number,
-            labels: ['auto-merge']
-        });
+        const auto_merge = pr.auto_merge;
+        if (auto_merge) {
+            core.info(`Adding auto-merge label to PR number - ${pr.number}`)
+            client.rest.issues.addLabels({
+                ...github.context.repo,
+                issue_number: pr.number,
+                labels: ['auto-merge']
+            });
+        }
     } catch (ex) {
         core.info(ex)
     }
