@@ -42,7 +42,7 @@ async function addLabel(pr) {
         const auto_merge = pr.auto_merge;
         if (auto_merge) {
             core.info(`Adding auto-merge label to PR number - ${pr.number}`)
-            client.rest.issues.addLabels({
+            await client.rest.issues.addLabels({
                 ...github.context.repo,
                 issue_number: pr.number,
                 labels: ['auto-merge']
@@ -50,7 +50,6 @@ async function addLabel(pr) {
         }
     } catch (ex) {
         core.info(ex)
-        core.setOutput("error", ex);
     }
 }
 
@@ -60,13 +59,12 @@ async function updateBranch(pr) {
     if (auto_merge) {
         core.info(`PR number - ${pr_number} auto_merge flag is set. Merging with ${baseBranch}`);
         try {
-            client.rest.pulls.updateBranch({
+            await client.rest.pulls.updateBranch({
                 ...github.context.repo,
                 pull_number: pr.number,
             });
         } catch (ex) {
             core.info(ex)
-            core.setOutput("error", ex);
         }
     } else {
         core.info(`PR number - ${pr_number} auto_merge flag isn't set. Skipping branch update`);
