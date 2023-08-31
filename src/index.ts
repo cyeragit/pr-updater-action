@@ -49,8 +49,8 @@ async function addLabel(pr) {
             });
         }
     } catch (ex) {
-        core.info(ex)
-        core.setOutput('error', ex)
+        core.info(ex);
+        core.setOutput('error', ex);
     }
 }
 
@@ -65,8 +65,12 @@ async function updateBranch(pr) {
                 pull_number: pr.number,
             });
         } catch (ex) {
-            core.info(ex)
-            core.setOutput('error', ex)
+            core.info(ex);
+            if (ex.toString().includes('merge conflict')) {
+                core.setOutput('error', 'merge_conflict');
+            } else {
+                core.setOutput('error', ex);
+            }
         }
     } else {
         core.info(`PR number - ${pr_number} auto_merge flag isn't set. Skipping branch update`);

@@ -1986,7 +1986,12 @@ function updateBranch(pr) {
             }
             catch (ex) {
                 core.info(ex);
-                core.setOutput('error', ex);
+                if (ex.toString().includes('merge conflict')) {
+                    core.setOutput('error', 'merge_conflict');
+                }
+                else {
+                    core.setOutput('error', ex);
+                }
             }
         }
         else {
