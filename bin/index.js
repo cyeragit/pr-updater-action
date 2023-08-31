@@ -1988,6 +1988,7 @@ function updateBranch(pr) {
                 core.info(ex);
                 if (ex.toString().includes('merge conflict')) {
                     core.setOutput('error', 'merge_conflict');
+                    core.setOutput('pr_number', pr_number.toString());
                 }
                 else {
                     core.setOutput('error', ex);
