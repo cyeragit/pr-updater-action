@@ -1966,7 +1966,7 @@ function addLabel(pr) {
             const auto_merge = pr.auto_merge;
             if (auto_merge) {
                 core.info(`Adding auto-merge label to PR number - ${pr.number}`);
-                client.rest.issues.addLabels(Object.assign(Object.assign({}, github.context.repo), { issue_number: pr.number, labels: ['auto-merge'] }));
+                yield client.rest.issues.addLabels(Object.assign(Object.assign({}, github.context.repo), { issue_number: pr.number, labels: ['auto-merge'] }));
             }
         }
         catch (ex) {
@@ -1982,11 +1982,16 @@ function updateBranch(pr) {
         if (auto_merge) {
             core.info(`PR number - ${pr_number} auto_merge flag is set. Merging with ${baseBranch}`);
             try {
-                client.rest.pulls.updateBranch(Object.assign(Object.assign({}, github.context.repo), { pull_number: pr.number }));
+                yield client.rest.pulls.updateBranch(Object.assign(Object.assign({}, github.context.repo), { pull_number: pr.number }));
             }
             catch (ex) {
                 core.info(ex);
-                core.setOutput('error', ex);
+                if (ex.toString().includes('merge conflict')) {
+                    core.setOutput('error', 'merge_conflict');
+                }
+                else {
+                    core.setOutput('error', ex);
+                }
             }
         }
         else {
