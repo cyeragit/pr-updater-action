@@ -1971,6 +1971,7 @@ function addLabel(pr) {
         }
         catch (ex) {
             core.info(ex);
+            core.setOutput('error', ex);
         }
     });
 }
@@ -1985,6 +1986,7 @@ function updateBranch(pr) {
             }
             catch (ex) {
                 core.info(ex);
+                core.setOutput('error', ex);
             }
         }
         else {

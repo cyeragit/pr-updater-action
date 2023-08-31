@@ -50,6 +50,7 @@ async function addLabel(pr) {
         }
     } catch (ex) {
         core.info(ex)
+        core.setOutput('error', ex)
     }
 }
 
@@ -65,6 +66,7 @@ async function updateBranch(pr) {
             });
         } catch (ex) {
             core.info(ex)
+            core.setOutput('error', ex)
         }
     } else {
         core.info(`PR number - ${pr_number} auto_merge flag isn't set. Skipping branch update`);
