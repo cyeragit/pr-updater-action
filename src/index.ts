@@ -6,6 +6,7 @@ const baseBranch = core.getInput('base_branch')
 const currentPRNumber = core.getInput('current_pr_number')
 const client = github.getOctokit(token)
 
+
 async function getSpecificPr() {
     return await client.rest.pulls.get({
         ...github.context.repo,
@@ -32,7 +33,9 @@ async function main() {
         core.info('PR number is not set, running on all PRs');
         const prsList = await listPRs(baseBranch);
         core.info(`PRs amount - ${prsList.length}`);
-        await Promise.all(prsList.map((pr) => updateBranch(pr).then(() => addLabel(pr))));
+        let pr_numbers = await Promise.all(prsList.map((pr) => updateBranch(pr).then(() => addLabel(pr)).catch(pr_number => pr_number)));
+        core.setOutput('error', 'merge_conflict');
+        core.setOutput('faulty_pr_numbers', pr_numbers.filter(num => num !== undefined));
     }
 
 }
@@ -50,7 +53,7 @@ async function addLabel(pr) {
         }
     } catch (ex) {
         core.info(ex);
-        core.setOutput('error', ex);
+        core.setOutput('add_label_error', ex);
     }
 }
 
@@ -67,10 +70,7 @@ async function updateBranch(pr) {
         } catch (ex) {
             core.info(ex);
             if (ex.toString().includes('merge conflict')) {
-                core.setOutput('error', 'merge_conflict');
-                core.setOutput('pr_number', pr_number.toString());
-            } else {
-                core.setOutput('error', ex);
+                throw pr_number;
             }
         }
     } else {

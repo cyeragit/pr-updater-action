@@ -1956,7 +1956,9 @@ function main() {
             core.info('PR number is not set, running on all PRs');
             const prsList = yield listPRs(baseBranch);
             core.info(`PRs amount - ${prsList.length}`);
-            yield Promise.all(prsList.map((pr) => updateBranch(pr).then(() => addLabel(pr))));
+            let pr_numbers = yield Promise.all(prsList.map((pr) => updateBranch(pr).then(() => addLabel(pr)).catch(pr_number => pr_number)));
+            core.setOutput('error', 'merge_conflict');
+            core.setOutput('faulty_pr_numbers', pr_numbers.filter(num => num !== undefined));
         }
     });
 }
@@ -1971,7 +1973,7 @@ function addLabel(pr) {
         }
         catch (ex) {
             core.info(ex);
-            core.setOutput('error', ex);
+            core.setOutput('add_label_error', ex);
         }
     });
 }
@@ -1987,11 +1989,7 @@ function updateBranch(pr) {
             catch (ex) {
                 core.info(ex);
                 if (ex.toString().includes('merge conflict')) {
-                    core.setOutput('error', 'merge_conflict');
-                    core.setOutput('pr_number', pr_number.toString());
-                }
-                else {
-                    core.setOutput('error', ex);
+                    throw pr_number;
                 }
             }
         }
