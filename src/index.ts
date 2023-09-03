@@ -33,9 +33,9 @@ async function main() {
         core.info('PR number is not set, running on all PRs');
         const prsList = await listPRs(baseBranch);
         core.info(`PRs amount - ${prsList.length}`);
-        let pr_numbers = await Promise.all(prsList.map((pr) => updateBranch(pr).then(() => addLabel(pr)).catch(pr_number => pr_number)));
+        let faulty_prs = await Promise.all(prsList.map((pr) => updateBranch(pr).then(() => addLabel(pr)).catch(pr => pr)));
         core.setOutput('error', 'merge_conflict');
-        core.setOutput('faulty_pr_numbers', JSON.stringify({"pr_numbers": pr_numbers.filter(num => num !== undefined)}));
+        core.setOutput('faulty_prs', JSON.stringify({"faulty_prs": faulty_prs.filter(pr => pr !== undefined)}));
     }
 
 }
@@ -70,7 +70,10 @@ async function updateBranch(pr) {
         } catch (ex) {
             core.info(ex);
             if (ex.toString().includes('merge conflict')) {
-                throw pr_number;
+                throw {
+                    "pr_number": pr_number,
+                    "pr_author": pr.user.login,
+                };
             }
         }
     } else {
