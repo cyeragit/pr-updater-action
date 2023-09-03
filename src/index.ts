@@ -35,7 +35,7 @@ async function main() {
         core.info(`PRs amount - ${prsList.length}`);
         let pr_numbers = await Promise.all(prsList.map((pr) => updateBranch(pr).then(() => addLabel(pr)).catch(pr_number => pr_number)));
         core.setOutput('error', 'merge_conflict');
-        core.setOutput('faulty_pr_numbers', pr_numbers.filter(num => num !== undefined));
+        core.setOutput('faulty_pr_numbers', JSON.stringify({"pr_numbers": pr_numbers.filter(num => num !== undefined)}));
     }
 
 }
