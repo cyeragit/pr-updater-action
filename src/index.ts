@@ -43,7 +43,7 @@ async function main() {
             // core.info(`There are no faulty PRs`);
             // FOR TESTING PURPOSES - DELETE AFTER
             core.setOutput('error', 'merge_conflict');
-            core.setOutput('faulty_prs', JSON.stringify([{ "pr_number": 1, "pr_author": "test" }, { "pr_number": 2, "pr_author": "test_2" }]));
+            core.setOutput('faulty_prs', JSON.stringify([{ "pr_number": 10949, "pr_author": "daniela-cyera" }, { "pr_number": 10949, "pr_author": "daniela-cyera" }]));
         }
     }
 
