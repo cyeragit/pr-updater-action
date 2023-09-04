@@ -39,6 +39,8 @@ async function main() {
             core.info(`There are ${filtered_faulty_prs.length} faulty PRs - ${JSON.stringify(filtered_faulty_prs)}`);
             core.setOutput('error', 'merge_conflict');
             core.setOutput('faulty_prs', JSON.stringify({"faulty_prs": filtered_faulty_prs}));
+        } else {
+            core.info(`There are no faulty PRs`);
         }
     }
 
