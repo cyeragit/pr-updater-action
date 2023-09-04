@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
-const token = core.getInput('token')
-const baseBranch = core.getInput('base_branch')
+const token = ''//core.getInput('token')
+const baseBranch = 'develop'//core.getInput('base_branch')
 const currentPRNumber = core.getInput('current_pr_number')
 const client = github.getOctokit(token)
 
@@ -34,8 +34,12 @@ async function main() {
         const prsList = await listPRs(baseBranch);
         core.info(`PRs amount - ${prsList.length}`);
         let faulty_prs = await Promise.all(prsList.map((pr) => updateBranch(pr).then(() => addLabel(pr)).catch(pr => pr)));
-        core.setOutput('error', 'merge_conflict');
-        core.setOutput('faulty_prs', JSON.stringify({"faulty_prs": faulty_prs.filter(pr => pr !== undefined)}));
+        let filtered_faulty_prs = faulty_prs.filter(pr => pr !== undefined);
+        if (filtered_faulty_prs.length > 0) {
+            core.info(`There are ${filtered_faulty_prs.length} faulty PRs - ${JSON.stringify(filtered_faulty_prs)}`);
+            core.setOutput('error', 'merge_conflict');
+            core.setOutput('faulty_prs', JSON.stringify({"faulty_prs": filtered_faulty_prs}));
+        }
     }
 
 }
