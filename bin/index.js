@@ -1931,8 +1931,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
-const token = ''; //core.getInput('token')
-const baseBranch = 'develop'; //core.getInput('base_branch')
+const token = core.getInput('token');
+const baseBranch = core.getInput('base_branch');
 const currentPRNumber = core.getInput('current_pr_number');
 const client = github.getOctokit(token);
 function getSpecificPr() {

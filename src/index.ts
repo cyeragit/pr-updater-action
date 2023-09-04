@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 
-const token = ''//core.getInput('token')
-const baseBranch = 'develop'//core.getInput('base_branch')
+const token = core.getInput('token')
+const baseBranch = core.getInput('base_branch')
 const currentPRNumber = core.getInput('current_pr_number')
 const client = github.getOctokit(token)
 
